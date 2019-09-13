@@ -1,0 +1,8 @@
+com/ww/api/hs/messaging/Event$1.class
+com/ww/api/hs/messaging/Event$Builder.class
+com/ww/api/hs/messaging/EventMetadata$1.class
+com/ww/api/hs/messaging/EventOrBuilder.class
+com/ww/api/hs/messaging/EventMetadataOrBuilder.class
+com/ww/api/hs/messaging/Event.class
+com/ww/api/hs/messaging/EventMetadata$Builder.class
+com/ww/api/hs/messaging/EventMetadata.class

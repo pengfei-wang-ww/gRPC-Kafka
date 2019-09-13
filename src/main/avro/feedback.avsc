@@ -1,0 +1,25 @@
+{
+  "namespace": "com.ww.api.hs.messaging.avro",
+  "name": "Feedback",
+  "type": "record",
+  "fields": [
+    {"name": "feedback_id", "type": "string"},
+    {
+      "name": "status",
+      "type": {
+        "type" : "enum",
+        "name" : "FeedbackStatus",
+        "symbols" : [ "OK", "COMPLETED", "ERROR", "CANCELED" ]
+      }
+    },
+    {
+      "name": "message_type",
+      "type": {
+        "type" : "enum",
+        "name" : "FeedbackMessageType",
+        "symbols" : [ "TEXT", "JSON" ]
+      }
+    },
+    {"name": "message", "type": "string"}
+  ]
+}

@@ -1,0 +1,74 @@
+/*
+    https://cqrs.wordpress.com/documents/building-event-storage/
+
+    Event Storage are far simpler that most data storage mechanisms as they do not support general purpose querying.
+    The first operation is to get all of the events for an aggregate.
+    The other operation an Event Storage must support is the writing of a set of events to an aggregate root.
+
+    Rolling Snapshots is not supported here since we are using CQRS
+*/
+syntax = "proto3";
+import "google/protobuf/struct.proto";
+package com.ww.api.hs.messaging;
+option java_multiple_files = true;
+
+
+service EventService {
+    rpc PostOne (Event) returns (PostResponse) {}; // Send a single event
+    rpc PostMany (stream Event) returns (PostResponse) {}; // Send many events
+    rpc Subscribe (SubscribeRequest) returns (stream SubscribeResponse) {}; // listen to a topic
+    rpc SendFeedback (Feedback) returns (SendFeedbackResponse) {} // send a feedback to a given feedback id
+    rpc GetFeedback (GetFeedbackRequest) returns (stream Feedback) {}; // listen for feedback of a give feedback_id
+}
+
+message Event {
+    string  aggregate_type  = 1;    // in namespace format like: hs.event.<aggregate>, a topic in Kafka for a given domain aggregate
+    string  aggregate_id    = 2;    // uuid, topic key in Kafka
+    string  action          = 3;
+    int32   version         = 4;    // auto increment by aggregate_id
+    google.protobuf.Struct  json            = 5;    // data in JSON format
+    EventMetadata metadata  = 6;
+}
+
+message EventMetadata {
+    int64   timestamp       = 1;
+    string  feedback_id     = 2;    // uuid for tracking feedback
+    string  service         = 3;    // from which service the event is created. in namespace format with docker image:version
+}
+
+message PostResponse {
+    string feedback_id = 1;
+}
+
+message SubscribeRequest {
+    string aggregate_type = 1;
+}
+
+message SubscribeResponse {
+    google.protobuf.Struct json = 1;
+}
+
+message SendFeedbackResponse {}
+
+message GetFeedbackRequest {
+    string feedback_id = 1;
+}
+
+message Feedback {
+    string feedback_id              = 1;
+    FeedbackStatus status           = 2;
+    FeedbackMessageType message_type= 3;
+    string  message                 = 4;
+}
+
+enum FeedbackStatus {
+    OK          = 0;    // default value, everything goes well but not completed
+    COMPLETED   = 1;
+    ERROR       = 2;
+    CANCELED    = 3;
+}
+
+enum FeedbackMessageType {
+    TEXT = 0;           // default value
+    JSON = 1;
+}
